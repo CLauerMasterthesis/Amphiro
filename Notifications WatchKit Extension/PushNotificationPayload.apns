@@ -1,15 +1,15 @@
 {
     "aps": {
         "alert": {
-            "body": "Test message",
-            "title": "Optional title"
+            "body": "amphiro",
+            "title": "New data available"
         },
         "category": "myCategory"
     },
     
     "WatchKit Simulator Actions": [
         {
-            "title": "First Button",
+            "title": "Check data",
             "identifier": "firstButtonAction"
         }
     ],

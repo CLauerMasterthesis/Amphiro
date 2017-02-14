@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+
 @interface ViewController : UIViewController
+
+@property (weak, nonatomic) IBOutlet UILabel *goal;
+@property (weak, nonatomic) IBOutlet UILabel *coreData;
 
 
 @end

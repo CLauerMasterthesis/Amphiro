@@ -7,8 +7,15 @@
 //
 
 #import "ExtensionDelegate.h"
+#import "InterfaceController.h"
+#import <WatchConnectivity/WatchConnectivity.h>
+#import "setGoal.h"
+//#import "PCKInterfaceControllerLoader.h"
+
+static InterfaceController *vc;
 
 @implementation ExtensionDelegate
+
 
 - (void)applicationDidFinishLaunching {
     // Perform any final initialization of your application.
@@ -49,5 +56,8 @@
         }
     }
 }
+
+
+
 
 @end

@@ -56,4 +56,23 @@
     handler(nil);
 }
 
+//Create a simple Complication as a Starter for the App (Is recommended by Apple)
+-(void)getPlaceholderTemplateForComplication:(CLKComplication *)complication withHandler:(void (^)(CLKComplicationTemplate * _Nullable))handler{
+    
+    if (complication.family == CLKComplicationFamilyModularSmall)
+    {
+
+        CLKImageProvider *image = [CLKImageProvider imageProviderWithOnePieceImage:[UIImage imageNamed:@"Modular"]];
+        CLKComplicationTemplateModularSmallSimpleImage* textTemplate =
+        [[CLKComplicationTemplateModularSmallSimpleImage alloc] init];
+        textTemplate.imageProvider = image;
+        
+        CLKComplicationTemplateModularSmallSimpleText* text = [[CLKComplicationTemplateModularSmallSimpleText alloc]init];
+        CLKTextProvider *t =[CLKSimpleTextProvider textProviderWithText:@"--"];
+        text.textProvider =t;
+        handler(textTemplate);
+
+    }
+}
+
 @end

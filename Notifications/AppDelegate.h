@@ -12,6 +12,8 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+//For saving Data in User Default-Array
+-(void)saveData:(NSMutableArray*)array;
 
 @end
 

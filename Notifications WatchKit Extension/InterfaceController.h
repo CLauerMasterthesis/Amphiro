@@ -8,7 +8,12 @@
 
 #import <WatchKit/WatchKit.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h> 
 
 @interface InterfaceController : WKInterfaceController
+
+@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceTable *tb;
+@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *tb_text;
+-(void)showGoal;
 
 @end

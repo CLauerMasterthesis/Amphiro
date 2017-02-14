@@ -7,7 +7,10 @@
 //
 
 #import <WatchKit/WatchKit.h>
+#import "InterfaceController.h"
+#import "setGoal.h"
 
 @interface ExtensionDelegate : NSObject <WKExtensionDelegate>
+
 
 @end
