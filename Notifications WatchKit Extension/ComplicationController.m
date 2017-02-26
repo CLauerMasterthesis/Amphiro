@@ -59,19 +59,34 @@
 //Create a simple Complication as a Starter for the App (Is recommended by Apple)
 -(void)getPlaceholderTemplateForComplication:(CLKComplication *)complication withHandler:(void (^)(CLKComplicationTemplate * _Nullable))handler{
     
+    //ModularSmall Image
     if (complication.family == CLKComplicationFamilyModularSmall)
     {
-
-        CLKImageProvider *image = [CLKImageProvider imageProviderWithOnePieceImage:[UIImage imageNamed:@"Modular"]];
+        CLKImageProvider *image = [CLKImageProvider imageProviderWithOnePieceImage:[UIImage imageNamed: @"Complication/Modular"]];
         CLKComplicationTemplateModularSmallSimpleImage* textTemplate =
         [[CLKComplicationTemplateModularSmallSimpleImage alloc] init];
         textTemplate.imageProvider = image;
-        
         CLKComplicationTemplateModularSmallSimpleText* text = [[CLKComplicationTemplateModularSmallSimpleText alloc]init];
         CLKTextProvider *t =[CLKSimpleTextProvider textProviderWithText:@"--"];
         text.textProvider =t;
         handler(textTemplate);
+    }
+    
+    //CircularSmall Image
+    if (complication.family == CLKComplicationFamilyCircularSmall)
+    {
+        
+        CLKImageProvider *image = [CLKImageProvider imageProviderWithOnePieceImage:[UIImage imageNamed: @"Complication/Circular"]];
+        CLKComplicationTemplateCircularSmallRingImage* textTemplate =
+        [[CLKComplicationTemplateCircularSmallRingImage alloc] init];
+        textTemplate.imageProvider = image;
 
+        CLKComplicationTemplateCircularSmallRingText* text = [[CLKComplicationTemplateCircularSmallRingText alloc]init];
+        
+        CLKTextProvider *t =[CLKSimpleTextProvider textProviderWithText:@"--"];
+        text.textProvider =t;
+        handler(textTemplate);
+        
     }
 }
 

@@ -1,3 +1,4 @@
+
 //
 //  InterfaceController.m
 //  Notifications WatchKit Extension
@@ -16,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet WKInterfaceGroup *grp;
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceButton *goalSettter;
 @property (nonatomic, weak) IBOutlet InterfaceController *interfaceController;
+@property (nonatomic, assign) BOOL switchStatus;
 
 @end
 
@@ -43,8 +45,7 @@
     [importantRow.grp setBackgroundColor:[UIColor colorWithRed:0.05 green:0.20 blue:0.24 alpha:1.0]];
     
     //add volume to table
-    NSString *volume= [[NSUserDefaults standardUserDefaults]
-                      stringForKey:@"volume"];
+    NSString *volume= [[NSUserDefaults standardUserDefaults] stringForKey:@"volume"];
     text = volume;
     [rowTypesList addObject:@"OrdinaryEventRow"];
     row = [_tb rowControllerAtIndex:1];
@@ -55,8 +56,7 @@
     [importantRow.grp setBackgroundColor:[UIColor colorWithRed:0.05 green:0.20 blue:0.24 alpha:1.0]];
 
     //add volume to table
-    NSString *efficiency= [[NSUserDefaults standardUserDefaults]
-                       stringForKey:@"heatingEfficiency"];
+    NSString *efficiency= [[NSUserDefaults standardUserDefaults] stringForKey:@"heatingEfficiency"];
     text = efficiency;
     [rowTypesList addObject:@"OrdinaryEventRow"];
     row = [_tb rowControllerAtIndex:2];
@@ -93,6 +93,7 @@
     
     //Get Number of elements from Json Data
     NSInteger count = [jsonData count];
+    
     //Get latest shower records
     NSString *volume = [[jsonData objectAtIndex: 0] objectForKey:@"volume"];
     NSString *temp = [[jsonData objectAtIndex: 0] objectForKey:@"temperature"];
@@ -110,6 +111,7 @@
     [self awakeWithContext:nil];
 }
 
+//Show the goalValue which is to be set on the watch
 -(void)showGoal {
     [self presentControllerWithName:@"goalView" context:nil];
 }
@@ -122,6 +124,9 @@
     
     //If Pairing amphiro was clicked -> Try to get iOS back in active/Foreground
     if([identifier isEqualToString:@"action"]){
+        
+        
+        
         //Setup WCSession
         if ([WCSession isSupported]) {
             [[WCSession defaultSession] setDelegate:self];
@@ -144,12 +149,85 @@
         }
     }
     
-    //If Goal Setting was clicked
+    //If Goal Setting was clicked -> Show Goal Set View
     if([identifier isEqualToString:@"action3"]){
         [self showGoal];
         
     }
 }
+
+- (IBAction)wakeUP {
+    
+    //Setup WCSession
+    if ([WCSession isSupported]) {
+        [[WCSession defaultSession] setDelegate:self];
+        [[WCSession defaultSession] activateSession];
+        
+        //Get the value from slider
+        NSString *someString = [[NSUserDefaults standardUserDefaults]
+                                stringForKey:@"Update"];
+        NSString *Update;
+        if(self.switchStatus==true){
+            Update = @"yes";
+        }
+        if(self.switchStatus==false){
+            Update = @"no";
+        }
+        
+        NSDictionary *applicationData = [[NSDictionary alloc] initWithObjects:@[Update] forKeys:@[@"Update"]];
+        //Send Message to the iPhone (handle over the goal value)
+        [[WCSession defaultSession] sendMessage:applicationData
+                                   replyHandler:^(NSDictionary *reply) {
+                                       //handle reply from iPhone app here
+                                   }
+                                   errorHandler:^(NSError *error) {
+                                       //catch any errors here
+                                   }
+         ];
+    }
+}
+
+- (IBAction)switch:(BOOL)value {
+    self.switchStatus = value;
+}
+
+
+
+////Get Background Transfer Data
+//- (void)session:(WCSession *)session
+//didReceiveApplicationContext:(nonnull NSDictionary<NSString *,id> *)applicationContext
+//{
+//    NSData*jsonData = [applicationContext objectForKey:@"JSONData"];
+//    NSArray *jsonArray = [NSKeyedUnarchiver unarchiveObjectWithData:jsonData];
+//    
+//     //In the event that the app is not running when the context data is transferred the method will be called next time the app is launched by the user.
+//    
+//    //Save array as NSUserDefault
+//    //[[NSUserDefaults standardUserDefaults] setObject:jsonArray forKey:@"jsonData"];
+//    //[[NSUserDefaults standardUserDefaults] synchronize];
+//    
+//    
+//    //Get latest shower records
+//    NSString *volume = [[jsonArray objectAtIndex: 0] objectForKey:@"volume"];
+//    NSString *temp = [[jsonArray  objectAtIndex: 0] objectForKey:@"temperature"];
+//    NSString *efficiency = [[jsonArray  objectAtIndex: 0] objectForKey:@"heatingEfficiency"];
+//    
+//    //Store data into UserDefaults
+//    //Save value as NSUserDefault
+//    [[NSUserDefaults standardUserDefaults] setObject:temp forKey:@"temperature"];
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//    [[NSUserDefaults standardUserDefaults] setObject:volume forKey:@"volume"];
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//    [[NSUserDefaults standardUserDefaults] setObject:efficiency forKey:@"heatingEfficiency"];
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//    
+//    [self awakeWithContext:nil];
+//    
+//}
+
+
+
+
 
 @end
 

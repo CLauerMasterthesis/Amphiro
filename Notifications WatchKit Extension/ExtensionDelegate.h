@@ -6,11 +6,11 @@
 //  Copyright © 2016 Christian Lauer. All rights reserved.
 //
 
-#import <WatchKit/WatchKit.h>
 #import "InterfaceController.h"
 #import "setGoal.h"
+@import WatchConnectivity;
+#import <WatchKit/WatchKit.h>
 
-@interface ExtensionDelegate : NSObject <WKExtensionDelegate>
-
+@interface ExtensionDelegate : NSObject <WKExtensionDelegate, WCSessionDelegate>
 
 @end

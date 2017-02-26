@@ -24,9 +24,13 @@
     
     //Set the label with a minimum goal value
     [_label1 setText:@"20"];
+    
+    //Set UserDefault goal Value per default to 20
+    [[NSUserDefaults standardUserDefaults] setObject:@"20" forKey:@"goalValue"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-//Handle save button
+//Handle save button send goalValue to Parent App
 - (IBAction)save_Goal {
     
     //WCSession for data transfer
@@ -34,7 +38,7 @@
     session.delegate = self;
     [session activateSession];
     
-    //Get the value from slider
+    //Get the value from slider or default 20 l
     NSString *someString = [[NSUserDefaults standardUserDefaults]
                             stringForKey:@"goalValue"];
     NSArray *counterString = [NSArray arrayWithObjects:someString,nil];
@@ -53,7 +57,7 @@
 //Handle Slider Input
 - (IBAction)set_Goal:(float)value {
     NSString *sliderText = [[NSNumber numberWithFloat:value] stringValue];
-    //Save the value as UserDefault
+    //Save the new value as UserDefault
     [[NSUserDefaults standardUserDefaults] setObject:sliderText forKey:@"goalValue"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     //Update View Controller

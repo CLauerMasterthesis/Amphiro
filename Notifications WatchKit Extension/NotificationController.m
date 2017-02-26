@@ -51,6 +51,7 @@
     //
     // After populating your dynamic notification interface call the completion block.
     completionHandler(WKUserNotificationInterfaceTypeCustom);
+
 }
 
 
@@ -62,6 +63,7 @@
     // Populate your dynamic notification interface as quickly as possible.
     //
     // After populating your dynamic notification interface call the completion block.
+    
     NSDictionary *dict = [localNotification userInfo];
     NSString *alertTitle = localNotification.alertTitle;
     [_labelAlert setText:alertTitle];
@@ -69,9 +71,6 @@
     [_alertBody setText:alertBody];
     completionHandler(WKUserNotificationInterfaceTypeCustom);
 }
-
-
-
 
 
 @end

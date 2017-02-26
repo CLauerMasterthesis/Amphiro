@@ -36,6 +36,10 @@
     NSString *someString = [[NSUserDefaults standardUserDefaults] stringForKey:@"goal"];
     [_goal setText:someString];
     [self.goal setText:someString];
+    
+    NSString *switchy = [[NSUserDefaults standardUserDefaults] stringForKey:@"Switch"];
+    [_coreData setText:switchy];
+    [self.coreData setText:switchy];
 
 }
 
@@ -55,7 +59,16 @@
 }
 
 //Receive Messages from Watch (in this case the data from Goal-Setting function and display new goal)
-- (void)session:(nonnull WCSession *)session didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)(NSDictionary * __nonnull))replyHandler {
+- (void)session:(nonnull WCSession *)session
+didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)(NSDictionary * __nonnull))replyHandler {
+
+    
+    //Wake Up
+    NSString * request = [message objectForKey:@"Update"];
+    [[NSUserDefaults standardUserDefaults] setObject:request forKey:@"Switch"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    //Goal Setting Value
     NSArray*counterValue = [message objectForKey:@"counterValue"];
     NSString *text = counterValue[0];
     //Save value as NSUserDefault
@@ -91,18 +104,30 @@
                 else
                 {
                     // Read NSDefaultData back
-                    NSMutableArray* array = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"showerData"]];
-                    
+                    NSData* array = [[NSUserDefaults standardUserDefaults] objectForKey:@"showerData"];
+                    NSArray *jsonArray = [NSKeyedUnarchiver unarchiveObjectWithData:array];
+
+                    NSArray *save=responseObject;
                     //Compare old with loaded data
-                    if(sizeof(responseObject)>sizeof(array))
+                    if(![responseObject isEqualToArray:jsonArray])
                     {
                         //If new data entries exists, save the data as new default data
-                        AppDelegate *myClass = [[AppDelegate alloc]init];
-                        [myClass saveData:responseObject];
+                        if ([responseObject isKindOfClass:[NSArray class]]) {
+                            //save data -> user default object
+                            //
+                            
+                            NSData *serialized = [NSKeyedArchiver archivedDataWithRootObject:save];
+                            [[NSUserDefaults standardUserDefaults] setObject:serialized forKey:@"showerData"];
+                            [[NSUserDefaults standardUserDefaults] synchronize];
+                            //Send Notification: Ne Data
+                            [self sendNotifications:@"checkData"];
+
+                        }
+                        //Transfer Data normally would be called here
                     }
                     
                     //if no new entries exsist
-                    if(sizeof(responseObject)==sizeof(array))
+                    if([responseObject isEqualToArray:jsonArray])
                     {
                         //Send Notification: Pair your amphiro
                         [self sendNotifications:@"checkAmphiro"];
@@ -124,19 +149,28 @@
 -(void)transferData:(NSMutableArray*)array{
     
     // Configure interface objects here.
-    WCSession* session = [WCSession defaultSession];
-    session.delegate = self;
-    [session activateSession];
-    NSDictionary *applicationData = [[NSDictionary alloc] initWithObjects:@[array] forKeys:@[@"JSONData"]];
+    //Setup WCSession
+    [[WCSession defaultSession]setDelegate:self];
+    [[WCSession defaultSession] activateSession];
+    
+    NSData *serialized = [NSKeyedArchiver archivedDataWithRootObject:array];
+    [[NSUserDefaults standardUserDefaults] setObject:serialized forKey:@"myKey"];
+
+    NSDictionary *applicationData = [[NSDictionary alloc] initWithObjects:@[serialized] forKeys:@[@"JSONData"]];
+    NSError *error = nil;
     //Send Message to the iPhone (handle over the goal value)
-    [[WCSession defaultSession] sendMessage:applicationData
-                               replyHandler:^(NSDictionary *reply) {
-                                   //handle reply from iPhone app here
-                               }
-                               errorHandler:^(NSError *error) {
-                                   //catch any errors here
-                               }
-     ];
+    if ([WCSession defaultSession]) {
+        [[WCSession defaultSession] updateApplicationContext:applicationData error:&error];
+        if (error) {
+            NSLog(@"Problem: @%@", error);
+        } else {
+            NSLog(@"sent dictionary");
+        }
+        
+    } else {
+        NSLog(@"not paired");
+    }
+    
 }
 
 - (IBAction)motivate:(id)sender {
@@ -161,22 +195,22 @@
 - (void) sendNotifications:(NSString *) Notifications{
     
     //Action - amphiro pairing message
-    UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:@"action" title:@"Versuche Update" options:UNNotificationActionOptionForeground];
+    UNNotificationAction *action = [UNNotificationAction actionWithIdentifier:@"action" title:@"amphiro verbinden" options:UNNotificationActionOptionForeground];
     
     //Action - motivating message
     UNNotificationAction *action2 = [UNNotificationAction actionWithIdentifier:@"action2" title:@"Öffne App" options:UNNotificationActionOptionForeground];
     
-    //Action - set goal
-    UNNotificationAction *action3 = [UNNotificationAction actionWithIdentifier:@"action3" title:@"Set Goal" options:UNNotificationActionOptionForeground];
+    //Action - set goal message
+    UNNotificationAction *action3 = [UNNotificationAction actionWithIdentifier:@"action3" title:@"Ziel setzen" options:UNNotificationActionOptionForeground];
     
     //Category1
     UNNotificationCategory * category1 = [UNNotificationCategory categoryWithIdentifier:@"myCategory" actions:@[action] intentIdentifiers:@[@"action"] options:UNNotificationCategoryOptionCustomDismissAction];
     
     //Category2
-    UNNotificationCategory * category2 = [UNNotificationCategory categoryWithIdentifier:@"myCategory2" actions:@[action2] intentIdentifiers:@[@"action2"] options:UNNotificationCategoryOptionCustomDismissAction];
+    UNNotificationCategory * category2 = [UNNotificationCategory categoryWithIdentifier:@"myCategory2" actions:@[action3] intentIdentifiers:@[@"action3"] options:UNNotificationCategoryOptionCustomDismissAction];
     
     //Category3
-    UNNotificationCategory * category3 = [UNNotificationCategory categoryWithIdentifier:@"myCategory3" actions:@[action3] intentIdentifiers:@[@"action3"] options:UNNotificationCategoryOptionCustomDismissAction];
+    UNNotificationCategory * category3 = [UNNotificationCategory categoryWithIdentifier:@"myCategory3" actions:@[action2] intentIdentifiers:@[@"action2"] options:UNNotificationCategoryOptionCustomDismissAction];
 
     //NSSET
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:[NSSet setWithObjects:category1,category2, category3, nil]];
@@ -212,13 +246,14 @@
         //[[UNMutableNotificationContent sharedApplication] scheduleLocalNotification:localNotification];
     }
     
-    //Motivating Message
-    if ([Notifications  isEqual:@"motivate"])
+    //New data Message
+    if ([Notifications  isEqual:@"checkData"])
     {
-        // Read it back
-        NSString *someString = [[NSUserDefaults standardUserDefaults]
-                                stringForKey:@"goalLabel"];
-        [_goal setText:someString];
+        content.title = [NSString localizedUserNotificationStringForKey:@"amphiro!" arguments:nil];
+        content.subtitle = [NSString localizedUserNotificationStringForKey:@"Setze dir ein Ziel" arguments:nil];
+        content.body = [NSString localizedUserNotificationStringForKey:@"Um noch mehr zu sparen =)" arguments:nil];
+        content.sound = [UNNotificationSound defaultSound];
+        content.categoryIdentifier=@"myCategory3";
     }
     
     //Set Goal Message
@@ -240,6 +275,8 @@
                  NSLog(@"completed!");
              }];
 }
+
+
 
 
 @end

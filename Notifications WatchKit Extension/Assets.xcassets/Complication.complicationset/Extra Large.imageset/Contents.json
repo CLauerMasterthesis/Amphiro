@@ -2,6 +2,7 @@
   "images" : [
     {
       "idiom" : "watch",
+      "filename" : "bear.png",
       "scale" : "2x"
     }
   ],

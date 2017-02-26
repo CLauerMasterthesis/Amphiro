@@ -8,13 +8,13 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import <WatchConnectivity/WatchConnectivity.h>
 
 @interface AppDelegate ()
-
+@property WCSession *session;
 @end
 
 @implementation AppDelegate
-
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -40,10 +40,11 @@
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
 }
 
--(void)saveData:(NSMutableArray*)array
+-(void)saveData:(NSArray*)array
 {
     //Get the standard UserDefault object, store UITableView data array against a key, synchronize the defaults
-    [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"showerData"];
+    NSArray *save= [[NSArray alloc] initWithArray:array];
+    [[NSUserDefaults standardUserDefaults] setObject:save forKey:@"showerData"];
     [[NSUserDefaults standardUserDefaults] synchronize];
  
 }
@@ -88,26 +89,27 @@
     completionHandler();
 }
 
+
 //Activate Parent App when Watchkit try to pair was clicked
-- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void(^)(NSDictionary *replyInfo))reply {
-    NSString * request = [userInfo objectForKey:@"Update"];
-    
-    if ([request isEqualToString:@"Update"]) {
-        
-        __block UIBackgroundTaskIdentifier watchKitHandler;
-        watchKitHandler = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundTask" expirationHandler:^{watchKitHandler = UIBackgroundTaskInvalid;}];
-        
-        if ([request isEqualToString:@"Update"])
-        {
-            // .....
-            //
-        }
-        
-        dispatch_after( dispatch_time( DISPATCH_TIME_NOW, (int64_t)NSEC_PER_SEC * 1 ), dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
-            [[UIApplication sharedApplication] endBackgroundTask:watchKitHandler];
-        } );
+- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void ( ^)( NSDictionary * ))reply
+{
+    // Start a WatchKit connectivity session
+    if([WCSession isSupported]) {
+        _session = [WCSession defaultSession];
+        _session.delegate = self;
+        [_session activateSession];
     }
     
+    //Begin Background Task
+    __block UIBackgroundTaskIdentifier watchKitHandler;
+    watchKitHandler = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundTask"expirationHandler:^{ watchKitHandler = UIBackgroundTaskInvalid;}];
+    
+    //Dispatch after 5 sec.
+    dispatch_after( dispatch_time( DISPATCH_TIME_NOW, (int64_t)NSEC_PER_SEC * 5), dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
+        [[UIApplication sharedApplication] endBackgroundTask:watchKitHandler];
+    } );
+}
+
     // This is just an example of what you could return. The one requirement is
     // you do have to execute the reply block, even if it is just to 'reply(nil)'.
     // All of the objects in the dictionary [must be serializable to a property list file][3].
@@ -117,7 +119,6 @@
     //NSDictionary * replyContent = [[NSDictionary alloc] initWithObjects:objects forKeys:keys];
     
     //reply(replyContent);
-}
 
 
 @end

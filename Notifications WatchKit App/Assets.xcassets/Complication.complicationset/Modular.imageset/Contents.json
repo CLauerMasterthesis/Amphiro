@@ -2,13 +2,13 @@
   "images" : [
     {
       "idiom" : "watch",
-      "filename" : "polar.png",
+      "filename" : "bear 2.png",
       "screen-width" : "<=145",
       "scale" : "2x"
     },
     {
       "idiom" : "watch",
-      "filename" : "polar Kopie.png",
+      "filename" : "bear.png",
       "screen-width" : ">145",
       "scale" : "2x"
     }

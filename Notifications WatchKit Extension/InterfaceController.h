@@ -14,6 +14,11 @@
 
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceTable *tb;
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *tb_text;
+
+
 -(void)showGoal;
+
+@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceSwitch *onOff;
+
 
 @end

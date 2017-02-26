@@ -7,13 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ViewController.h"
+@import WatchConnectivity;
+#import <WatchKit/WatchKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, WCSessionDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
 //For saving Data in User Default-Array
--(void)saveData:(NSMutableArray*)array;
+-(void)saveData:(NSArray*)array;
 
 @end
 

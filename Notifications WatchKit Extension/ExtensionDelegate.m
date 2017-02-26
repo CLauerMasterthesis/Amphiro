@@ -10,15 +10,35 @@
 #import "InterfaceController.h"
 #import <WatchConnectivity/WatchConnectivity.h>
 #import "setGoal.h"
-//#import "PCKInterfaceControllerLoader.h"
 
-static InterfaceController *vc;
+@import WatchConnectivity;
+
+@interface ExtensionDelegate()
+@property WCSession *session;
+@end
 
 @implementation ExtensionDelegate
 
 
+//Init WCSession in Extension Delegate
+- (instancetype)init
+{
+    self = [super init];
+    if(self) {
+        // Start a WatchKit connectivity session
+        if([WCSession isSupported]) {
+            _session = [WCSession defaultSession];
+            _session.delegate = self;
+            [_session activateSession];
+        }
+    }
+    return self;
+}
+
+
 - (void)applicationDidFinishLaunching {
     // Perform any final initialization of your application.
+    
 }
 
 - (void)applicationDidBecomeActive {
@@ -57,7 +77,35 @@ static InterfaceController *vc;
     }
 }
 
-
+//Get Background Transfer Data
+- (void)session:(WCSession *)session
+didReceiveApplicationContext:(nonnull NSDictionary<NSString *,id> *)applicationContext
+{
+    NSData*jsonData = [applicationContext objectForKey:@"JSONData"];
+    NSArray *jsonArray = [NSKeyedUnarchiver unarchiveObjectWithData:jsonData];
+    
+    //In the event that the app is not running when the context data is transferred the method will be called next time the app is launched by the user.
+    
+    //Save array as NSUserDefault
+    //[[NSUserDefaults standardUserDefaults] setObject:jsonArray forKey:@"jsonData"];
+    //[[NSUserDefaults standardUserDefaults] synchronize];
+    
+    
+    //Get latest shower records
+    NSString *volume = [[jsonArray objectAtIndex: 0] objectForKey:@"volume"];
+    NSString *temp = [[jsonArray  objectAtIndex: 0] objectForKey:@"temperature"];
+    NSString *efficiency = [[jsonArray  objectAtIndex: 0] objectForKey:@"heatingEfficiency"];
+    
+    //Store data into UserDefaults
+    //Save value as NSUserDefault
+    [[NSUserDefaults standardUserDefaults] setObject:temp forKey:@"temperature"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSUserDefaults standardUserDefaults] setObject:volume forKey:@"volume"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSUserDefaults standardUserDefaults] setObject:efficiency forKey:@"heatingEfficiency"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+}
 
 
 @end

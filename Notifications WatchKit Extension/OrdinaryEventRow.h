@@ -14,5 +14,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *label;
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceGroup *grp;
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *table_text;
+@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *plusMinus;
+
 
 @end
