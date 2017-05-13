@@ -9,6 +9,4 @@
 #import "OrdinaryEventRow.h"
 
 @implementation OrdinaryEventRow
-
-
 @end

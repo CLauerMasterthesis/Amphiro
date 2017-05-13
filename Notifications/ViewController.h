@@ -13,6 +13,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *goal;
 @property (weak, nonatomic) IBOutlet UILabel *coreData;
+@property (weak, nonatomic) IBOutlet UILabel *Location;
 
 
 @end

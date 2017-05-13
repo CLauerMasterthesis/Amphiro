@@ -11,8 +11,6 @@
 #import <UIKit/UIKit.h>
 
 @interface setGoal : WKInterfaceController
-
+/*! @brief Displays the goal volume which is entered by the user with the help of a slider*/
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceLabel *label1;
-
-
 @end

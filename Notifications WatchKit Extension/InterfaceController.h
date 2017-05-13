@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h> 
 
+
 @interface InterfaceController : WKInterfaceController
 
 @property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceTable *tb;
@@ -18,7 +19,5 @@
 
 -(void)showGoal;
 
-@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceSwitch *onOff;
-
-
+@property (unsafe_unretained, nonatomic) IBOutlet WKInterfaceImage *image;
 @end

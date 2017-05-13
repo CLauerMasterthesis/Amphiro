@@ -43,6 +43,7 @@
 		831197591E27BB4600B8CB5F /* UIWebView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 831197451E27BB4600B8CB5F /* UIWebView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8311975A1E27BB4600B8CB5F /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 831197461E27BB4600B8CB5F /* UIWebView+AFNetworking.m */; };
 		8335291C1E40D18D009B75A3 /* setGoal.m in Sources */ = {isa = PBXBuildFile; fileRef = 8335291B1E40D18D009B75A3 /* setGoal.m */; };
+		835302EE1E9122B800CA58B3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 835302ED1E9122B800CA58B3 /* CoreLocation.framework */; };
 		8392B8DB1E016DEB004D4E63 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8392B8DA1E016DEB004D4E63 /* main.m */; };
 		8392B8DE1E016DEB004D4E63 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8392B8DD1E016DEB004D4E63 /* AppDelegate.m */; };
 		8392B8E11E016DEB004D4E63 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8392B8E01E016DEB004D4E63 /* ViewController.m */; };
@@ -60,7 +61,6 @@
 		8392B9101E016DEC004D4E63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8392B90F1E016DEC004D4E63 /* Assets.xcassets */; };
 		83B703021E52EB06003591AF /* WatchKit in Resources */ = {isa = PBXBuildFile; fileRef = 83B703011E52EB06003591AF /* WatchKit */; };
 		83F11E591E06AD8200BB6D91 /* OrdinaryEventRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F11E581E06AD8200BB6D91 /* OrdinaryEventRow.m */; };
-		83F11E601E0AB1FE00BB6D91 /* WKInterfaceController+Volume.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F11E5F1E0AB1FE00BB6D91 /* WKInterfaceController+Volume.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +146,7 @@
 		8335291D1E4F5EB1009B75A3 /* Notifications.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notifications.entitlements; sourceTree = "<group>"; };
 		8335291E1E4F5EC6009B75A3 /* Notifications WatchKit Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Notifications WatchKit Extension.entitlements"; sourceTree = "<group>"; };
 		8335291F1E4F6BDD009B75A3 /* Notifications WatchKit App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Notifications WatchKit App.entitlements"; sourceTree = "<group>"; };
+		835302ED1E9122B800CA58B3 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS3.1.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
 		8392B8D61E016DEB004D4E63 /* Notifications.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notifications.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8392B8DA1E016DEB004D4E63 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8392B8DC1E016DEB004D4E63 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -175,8 +176,6 @@
 		83B703011E52EB06003591AF /* WatchKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WatchKit; path = "/Users/Chris/Downloads/PivotalCoreKit-master/WatchKit"; sourceTree = "<absolute>"; };
 		83F11E571E06AD6200BB6D91 /* OrdinaryEventRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrdinaryEventRow.h; sourceTree = "<group>"; };
 		83F11E581E06AD8200BB6D91 /* OrdinaryEventRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrdinaryEventRow.m; sourceTree = "<group>"; };
-		83F11E5E1E0AB1FE00BB6D91 /* WKInterfaceController+Volume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "WKInterfaceController+Volume.h"; sourceTree = "<group>"; };
-		83F11E5F1E0AB1FE00BB6D91 /* WKInterfaceController+Volume.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "WKInterfaceController+Volume.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +190,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				835302EE1E9122B800CA58B3 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,8 +319,6 @@
 				8392B90D1E016DEC004D4E63 /* ComplicationController.m */,
 				83F11E571E06AD6200BB6D91 /* OrdinaryEventRow.h */,
 				83F11E581E06AD8200BB6D91 /* OrdinaryEventRow.m */,
-				83F11E5E1E0AB1FE00BB6D91 /* WKInterfaceController+Volume.h */,
-				83F11E5F1E0AB1FE00BB6D91 /* WKInterfaceController+Volume.m */,
 				8392B90F1E016DEC004D4E63 /* Assets.xcassets */,
 				8392B9111E016DEC004D4E63 /* Info.plist */,
 				8392B9011E016DEC004D4E63 /* Supporting Files */,
@@ -339,6 +337,7 @@
 		83B703131E52EFF6003591AF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				835302ED1E9122B800CA58B3 /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -567,7 +566,6 @@
 				83F11E591E06AD8200BB6D91 /* OrdinaryEventRow.m in Sources */,
 				8392B90B1E016DEC004D4E63 /* NotificationController.m in Sources */,
 				8335291C1E40D18D009B75A3 /* setGoal.m in Sources */,
-				83F11E601E0AB1FE00BB6D91 /* WKInterfaceController+Volume.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

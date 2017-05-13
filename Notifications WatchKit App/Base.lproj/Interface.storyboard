@@ -8,13 +8,13 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="11508"/>
     </dependencies>
     <scenes>
-        <!--Interface Controller-->
+        <!--mainView-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller id="AgC-eL-Hgc" customClass="InterfaceController">
+                <controller title="mainView" id="AgC-eL-Hgc" customClass="InterfaceController">
                     <items>
                         <label alignment="left" text="amphiro" id="PGk-WO-E41">
-                            <color key="textColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                         </label>
                         <separator alignment="left" id="hqB-zn-FwM"/>
@@ -25,6 +25,7 @@
                                     <group key="rootItem" width="1" height="38" alignment="left" id="tVd-uk-Wit">
                                         <items>
                                             <label alignment="left" text="Label" numberOfLines="3" id="RYp-8h-bzx">
+                                                <color key="textColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                                             </label>
                                             <label height="20" alignment="right" verticalAlignment="bottom" text="Label" textAlignment="left" id="f9N-Nc-JNb">
@@ -32,7 +33,6 @@
                                                 <fontDescription key="font" style="UICTFontTextStyleBody"/>
                                             </label>
                                         </items>
-                                        <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </group>
                                     <connections>
                                         <outlet property="grp" destination="tVd-uk-Wit" id="Vfg-Uz-wMR"/>
@@ -43,26 +43,16 @@
                             </items>
                         </table>
                         <separator alignment="left" id="XLf-CA-0uL"/>
-                        <button width="1" alignment="left" title="Ziel setzen" id="Qzx-JR-acp">
-                            <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="0.25098040700000002" alpha="1" colorSpace="calibratedRGB"/>
-                            <connections>
-                                <segue destination="2rm-cM-6lU" kind="modal" identifier="goalView" id="tvh-IZ-U9Y"/>
-                            </connections>
-                        </button>
+                        <label alignment="left" text="Let iOS check for amphiro" numberOfLines="2" id="zpm-qA-ch3"/>
                         <button width="1" alignment="left" title="Wake Up!" id="TZ6-m2-k8U">
+                            <color key="titleColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="wakeUP" destination="AgC-eL-Hgc" id="4xZ-ja-pqA"/>
                             </connections>
                         </button>
-                        <switch width="1" alignment="left" value="YES" title="Switch" id="tce-Az-va6">
-                            <connections>
-                                <action selector="switch:" destination="AgC-eL-Hgc" id="YAG-r4-6J1"/>
-                            </connections>
-                        </switch>
                     </items>
                     <connections>
-                        <outlet property="goalSettter" destination="Qzx-JR-acp" id="cmJ-uB-RIC"/>
-                        <outlet property="onOff" destination="tce-Az-va6" id="PCs-Vg-6WX"/>
                         <outlet property="tb" destination="gSH-kv-cvG" id="Cds-Nx-YKX"/>
                         <segue destination="4MT-G9-vwQ" kind="relationship" relationship="nextPage" id="vqt-R2-8pR"/>
                     </connections>
@@ -70,26 +60,28 @@
             </objects>
             <point key="canvasLocation" x="156" y="318"/>
         </scene>
-        <!--Interface Controller-->
+        <!--compareView-->
         <scene sceneID="xEd-pH-6Mq">
             <objects>
-                <controller id="4MT-G9-vwQ" customClass="InterfaceController">
+                <controller title="compareView" id="4MT-G9-vwQ" customClass="InterfaceController">
                     <items>
-                        <label width="136" alignment="left" text="Gesamtverbrauch:" numberOfLines="2" id="Jl0-Kh-jek">
-                            <fontDescription key="font" style="UICTFontTextStyleCaption1"/>
-                        </label>
-                        <imageView width="36" height="43" alignment="left" image="water" id="kM0-Zc-4je"/>
-                        <label width="1" alignment="center" text="820 l" id="7W5-C9-YLZ">
+                        <label width="136" alignment="left" text="Vergleich mit amphiro Community:" numberOfLines="3" id="Kfx-fz-WIK">
+                            <color key="textColor" red="0.40000000000000002" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                         </label>
-                        <label width="1" alignment="left" text="an Wasser gesparrt" numberOfLines="2" id="C01-SC-MYW"/>
+                        <label alignment="left" text="Du" id="2d2-Id-uYb"/>
+                        <imageView alignment="left" image="single40suffix" id="E5R-og-IpA"/>
+                        <label alignment="left" text="Sparsamsten" id="kjO-ta-MQu"/>
+                        <imageView alignment="left" image="single25suffix" id="f3S-07-ee5"/>
+                        <label alignment="left" text="Durchschnitt" id="0f5-tj-HDj"/>
+                        <imageView alignment="left" image="single50suffix" id="VUO-Bt-mai"/>
                     </items>
                     <connections>
                         <segue destination="OTu-Li-jpC" kind="relationship" relationship="nextPage" id="ylH-qp-UMn"/>
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="490" y="317.5"/>
+            <point key="canvasLocation" x="490" y="261.5"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">
@@ -102,9 +94,9 @@
                     </items>
                     <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf">
                         <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="sashColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="sashColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </notificationCategory>
-                    <color key="backgroundColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <connections>
                         <outlet property="notificationAlertLabel" destination="IdU-wH-bcW" id="JKC-fr-R95"/>
                         <segue destination="4sK-HA-Art" kind="relationship" relationship="dynamicNotificationInterface" id="kXh-Jw-8B1"/>
@@ -124,32 +116,51 @@
                         <separator alignment="left" id="ibc-Bc-EWS"/>
                         <group width="1" alignment="left" id="Etv-gc-vgV">
                             <items>
-                                <label width="136" alignment="left" text="Verbinde dein iPhone mal wieder mit deinem amphiro" numberOfLines="5" id="hNx-bo-CXt"/>
+                                <label alignment="left" text="Verbinde dein iPhone mal wieder mit deinem amphiro" numberOfLines="6" id="hNx-bo-CXt"/>
                             </items>
+                            <color key="backgroundColor" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </group>
                     </items>
-                    <color key="backgroundColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="sfr-BR-poD" id="YKP-o1-oQz"/>
+                    </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="551" y="643"/>
         </scene>
-        <!--Interface Controller-->
+        <!--historicalDataView-->
         <scene sceneID="uTu-M2-PQw">
             <objects>
-                <controller id="OTu-Li-jpC" customClass="InterfaceController">
+                <controller title="historicalDataView" id="OTu-Li-jpC" customClass="InterfaceController">
                     <items>
-                        <label width="136" alignment="left" text="Gesamtverbrauch:" numberOfLines="2" id="vbu-dQ-vLF">
-                            <fontDescription key="font" style="UICTFontTextStyleCaption1"/>
-                        </label>
-                        <imageView width="49" height="47" alignment="left" image="Leaf" id="O0l-dy-nJh"/>
-                        <label width="1" alignment="center" text="7.807 Wh" id="52t-ih-dgW">
+                        <label width="136" alignment="left" text="Gesamt Verbrauch:" numberOfLines="2" id="vbu-dQ-vLF">
+                            <color key="textColor" red="0.40000000000000002" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                         </label>
-                        <label alignment="left" text="An Energie gesparrt" numberOfLines="2" id="XNs-ir-XKh"/>
+                        <group width="1" alignment="left" id="k2E-n1-i8c">
+                            <items>
+                                <label width="0.5" alignment="left" text="7.807 Wh" numberOfLines="0" id="52t-ih-dgW">
+                                    <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
+                                </label>
+                                <label width="0.5" alignment="right" text="Energie " numberOfLines="4" id="XNs-ir-XKh"/>
+                            </items>
+                        </group>
+                        <group width="134" alignment="left" id="IRp-Wj-Gj0">
+                            <items>
+                                <label width="0.5" alignment="left" text="269 l" numberOfLines="0" id="Dqd-nh-Y5B">
+                                    <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
+                                </label>
+                                <label width="0.5" alignment="right" text="Volumen" numberOfLines="4" id="pON-EP-ljG"/>
+                            </items>
+                        </group>
                     </items>
+                    <connections>
+                        <segue destination="2rm-cM-6lU" kind="relationship" relationship="nextPage" id="Jk3-Bc-Bq7"/>
+                    </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="778" y="318"/>
+            <point key="canvasLocation" x="778" y="321"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="6Da-BE-Cvg">
@@ -160,7 +171,7 @@
                     </items>
                     <notificationCategory key="notificationCategory" identifier="myCategory2" id="1Ob-Fr-sv8">
                         <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="sashColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="sashColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </notificationCategory>
                     <connections>
                         <outlet property="notificationAlertLabel" destination="NdX-Wq-8Na" id="aoj-QK-7ay"/>
@@ -181,11 +192,11 @@
                         <separator alignment="left" id="fdM-kq-wFe"/>
                         <group width="1" alignment="left" id="1jf-Iy-WRI">
                             <items>
-                                <label alignment="left" text="Die Ziel-Setzfunktion kann dir dabei helfen mehr zu sparen" numberOfLines="5" id="cG4-9l-hfo"/>
+                                <label width="1" alignment="left" text="Die Ziel-Setzfunktion kann dir dabei helfen mehr zu sparen" numberOfLines="6" id="cG4-9l-hfo"/>
                             </items>
                         </group>
                     </items>
-                    <color key="backgroundColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </controller>
             </objects>
             <point key="canvasLocation" x="566" y="916"/>
@@ -201,7 +212,7 @@
                     </items>
                     <notificationCategory key="notificationCategory" identifier="myCategory3" id="3Af-BF-jbg">
                         <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="sashColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="sashColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </notificationCategory>
                     <color key="backgroundColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
@@ -227,7 +238,7 @@
                             </items>
                         </group>
                     </items>
-                    <color key="backgroundColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </controller>
             </objects>
             <point key="canvasLocation" x="566" y="1193"/>
@@ -238,11 +249,11 @@
                 <controller identifier="goalView" id="2rm-cM-6lU" customClass="setGoal">
                     <items>
                         <label alignment="left" text="amphiro" id="tX9-a3-XLe">
-                            <color key="textColor" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                         </label>
                         <slider width="1" alignment="left" value="20" minimum="20" maximum="50" steps="6" id="bWU-mF-8Kk">
-                            <color key="color" red="0.65428854459999997" green="0.82050053030000003" blue="0.9074036593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="color" red="0.47160133609999999" green="0.9074036593" blue="0.54317948130000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="set_Goal:" destination="2rm-cM-6lU" id="e75-o6-2bC"/>
                             </connections>
@@ -253,7 +264,8 @@
                             <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
                         </label>
                         <button width="1" alignment="left" title="Speichern" id="Gkz-G8-V8s">
-                            <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="0.25098040700000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="titleColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.0" green="0.80000000000000004" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
                                 <action selector="save_Goal" destination="2rm-cM-6lU" id="A6q-V1-oXO"/>
                             </connections>
@@ -265,7 +277,7 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="529" y="-40"/>
+            <point key="canvasLocation" x="1041" y="317"/>
         </scene>
     </scenes>
 </document>

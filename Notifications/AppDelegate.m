@@ -9,18 +9,34 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 #import <WatchConnectivity/WatchConnectivity.h>
+@import CoreLocation;
 
 @interface AppDelegate ()
 @property WCSession *session;
+@property (strong, nonatomic) CLLocationManager *locationManager;
 @end
-
 @implementation AppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
 
-    // Override point for customization after application launch.
+    // Start a WatchKit connectivity session in AppDelegate for Background transfers
+    if([WCSession isSupported]) {
+        _session = [WCSession defaultSession];
+        _session.delegate = self;
+        [_session activateSession];
+        
+        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager.distanceFilter = kCLDistanceFilterNone; // whenever we move
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest; // 100 m
+        _locationManager.activityType = CLActivityTypeFitness;
+        _locationManager.pausesLocationUpdatesAutomatically=NO;
+        _locationManager.allowsBackgroundLocationUpdates=true;
+        [_locationManager setAllowsBackgroundLocationUpdates:YES];
+        
+        [_locationManager startUpdatingLocation];
+    }
     
     // None of the code should even be compiled unless the Base SDK is iOS 8.0 or later
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
@@ -46,7 +62,6 @@
     NSArray *save= [[NSArray alloc] initWithArray:array];
     [[NSUserDefaults standardUserDefaults] setObject:save forKey:@"showerData"];
     [[NSUserDefaults standardUserDefaults] synchronize];
- 
 }
 
 
@@ -90,35 +105,80 @@
 }
 
 
-//Activate Parent App when Watchkit try to pair was clicked
-- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void ( ^)( NSDictionary * ))reply
-{
-    // Start a WatchKit connectivity session
-    if([WCSession isSupported]) {
-        _session = [WCSession defaultSession];
-        _session.delegate = self;
-        [_session activateSession];
+////Activate Parent App when Watchkit try to pair was clicked
+//- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void ( ^)( NSDictionary * ))reply
+//{
+//    // Start a WatchKit connectivity session
+//    if([WCSession isSupported]) {
+//        _session = [WCSession defaultSession];
+//        _session.delegate = self;
+//        [_session activateSession];
+//    }
+//    
+//    //Begin Background Task
+//    __block UIBackgroundTaskIdentifier watchKitHandler;
+//    watchKitHandler = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundTask"expirationHandler:^{ watchKitHandler = UIBackgroundTaskInvalid;}];
+//    
+//    NSString * request = [userInfo objectForKey:@"Update"];
+//    [[NSUserDefaults standardUserDefaults] setObject:request forKey:@"Switch"];
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//    
+//    //Dispatch after 5 sec.
+//    dispatch_after( dispatch_time( DISPATCH_TIME_NOW, (int64_t)NSEC_PER_SEC * 15), dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
+//        [[UIApplication sharedApplication] endBackgroundTask:watchKitHandler];
+//    } );
+//}
+
+//Receive Messages from Watch (Wake Up)
+- (void)session:(nonnull WCSession *)session
+didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)(NSDictionary * __nonnull))replyHandler {
+    if ([message objectForKey:@"Update"])
+    {
+    NSString * request = [message objectForKey:@"Update"];
+    [[NSUserDefaults standardUserDefaults] setObject:request forKey:@"Switch"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    replyHandler(@{@"a":@"hello"});
     }
-    
-    //Begin Background Task
-    __block UIBackgroundTaskIdentifier watchKitHandler;
-    watchKitHandler = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"backgroundTask"expirationHandler:^{ watchKitHandler = UIBackgroundTaskInvalid;}];
-    
-    //Dispatch after 5 sec.
-    dispatch_after( dispatch_time( DISPATCH_TIME_NOW, (int64_t)NSEC_PER_SEC * 5), dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
-        [[UIApplication sharedApplication] endBackgroundTask:watchKitHandler];
-    } );
+    //Goal Setting Value
+    if ([message objectForKey:@"counterValue"])
+    {
+        NSArray*counterValue = [message objectForKey:@"counterValue"];
+        NSString *text = counterValue[0];
+        //Save value as NSUserDefault
+        [[NSUserDefaults standardUserDefaults] setObject:text forKey:@"goal"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
-    // This is just an example of what you could return. The one requirement is
-    // you do have to execute the reply block, even if it is just to 'reply(nil)'.
-    // All of the objects in the dictionary [must be serializable to a property list file][3].
-    // If necessary, you can covert other objects to NSData blobs first.
-    //NSArray * objects = [[NSArray alloc] initWithObjects:myObjectA, myObjectB, myObjectC, nil];
-    //NSArray * keys = [[NSArray alloc] initWithObjects:@"objectAName", @"objectBName", @"objectCName", nil];
-    //NSDictionary * replyContent = [[NSDictionary alloc] initWithObjects:objects forKeys:keys];
-    
-    //reply(replyContent);
+/**
+ * System will allow iOS-App to execute actions (even if in Background mode or when eliminated) when a location update takes place.
+ */
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations {
+    NSDictionary *userLoc=[[NSUserDefaults standardUserDefaults] objectForKey:@"userLocation"];
+    NSString *lat= [userLoc objectForKey:@"lat"];
+    NSString *lon =[userLoc objectForKey:@"long"];
+    CLLocation *oldLocation=[[CLLocation alloc] initWithLatitude:[[userLoc objectForKey:@"lat"] doubleValue] longitude:[[userLoc objectForKey:@"long"] doubleValue]];
+    CLLocation *newLocation = locations.lastObject;
+    CLLocationDistance threshold = 500.0;  // threshold distance in meters
+    UILocalNotification *notification = [[UILocalNotification alloc]init];
+    [notification setAlertBody:@"Neue Location!"];
+    [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    // note: userLocation and otherLocation are CLLocation objects
+    if ([newLocation distanceFromLocation:oldLocation] <= threshold) {
+        UILocalNotification *notification = [[UILocalNotification alloc]init];
+        [notification setAlertBody:@"Zuhause!"];
+        [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
 
+    if ([newLocation distanceFromLocation:oldLocation] >= threshold) {
+        UILocalNotification *notification = [[UILocalNotification alloc]init];
+        [notification setAlertBody:@"Nicht zuhause!"];
+        [notification setFireDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
+}
 
 @end

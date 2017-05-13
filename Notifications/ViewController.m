@@ -13,11 +13,20 @@
 #import "AFNetworking.h"
 #import "AppDelegate.h"
 #import <WatchConnectivity/WatchConnectivity.h>
+@import CoreLocation;
 
 @interface ViewController () <WCSessionDelegate>
-
+@property (strong, nonatomic) CLLocationManager *locationManager;
 @end
 
+
+/*!
+ @ViewController
+ 
+ @brief The View Controller class
+ 
+ @discussion    This class was designed and implemented to simulate the iOS/amphiro App as the counterpart of the Watch-App
+ */
 @implementation ViewController
 
 
@@ -31,27 +40,23 @@
         [[WCSession defaultSession]setDelegate:self];
         [[WCSession defaultSession] activateSession];
     }
-    
+    NSDictionary *userLoc=[[NSUserDefaults standardUserDefaults] objectForKey:@"userLocation"];
+    NSString *lat= [userLoc objectForKey:@"lat"];
+    NSString *lon =[userLoc objectForKey:@"long"];
     //Read UserDefault Data back
     NSString *someString = [[NSUserDefaults standardUserDefaults] stringForKey:@"goal"];
     [_goal setText:someString];
     [self.goal setText:someString];
-    
-    NSString *switchy = [[NSUserDefaults standardUserDefaults] stringForKey:@"Switch"];
-    [_coreData setText:switchy];
-    [self.coreData setText:switchy];
-
 }
 
-//Update Display (goal value)
+/**
+ * Updates the View if new data has been delivered.
+ */
 -(void)updateDisplay{
-    
-    // Read UserDefault data back
     NSString *someString = [[NSUserDefaults standardUserDefaults] stringForKey:@"goal"];
     [_goal setText:someString];
     [self.goal setText:someString];
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -62,23 +67,30 @@
 - (void)session:(nonnull WCSession *)session
 didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)(NSDictionary * __nonnull))replyHandler {
 
-    
     //Wake Up
-    NSString * request = [message objectForKey:@"Update"];
-    [[NSUserDefaults standardUserDefaults] setObject:request forKey:@"Switch"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if ([message objectForKey:@"Update"])
+    {
+        NSString * request = [message objectForKey:@"Update"];
+        [[NSUserDefaults standardUserDefaults] setObject:request forKey:@"Switch"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        replyHandler(@{@"a":@"hello"});
+    }
     
     //Goal Setting Value
-    NSArray*counterValue = [message objectForKey:@"counterValue"];
-    NSString *text = counterValue[0];
-    //Save value as NSUserDefault
-    [[NSUserDefaults standardUserDefaults] setObject:text forKey:@"goal"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    //Update View Controller
-    [self updateDisplay];
+    if ([message objectForKey:@"counterValue"])
+    {
+        NSArray*counterValue = [message objectForKey:@"counterValue"];
+        NSString *text = counterValue[0];
+        //Save value as NSUserDefault
+        [[NSUserDefaults standardUserDefaults] setObject:text forKey:@"goal"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self updateDisplay];
+    }
 }
 
-//Let iOS check for new Data
+/**
+ * Method to load the JSON data from the amphiro server and store it.
+ */
 - (IBAction)checkforData:(id)sender {
 
     //With the help of AF Manager, get JSON Data
@@ -96,17 +108,17 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
             NSLog(@"JSON: %@", responseObject);
             if ([responseObject isKindOfClass:[NSArray class]]) {
                 //if no Data is stored before
-                if([[NSUserDefaults standardUserDefaults] objectForKey:@"showerData"] == nil) {
-                    //save data -> user default object
-                    AppDelegate *myClass = [[AppDelegate alloc]init];
-                    [myClass saveData:responseObject];
-                }
-                else
-                {
-                    // Read NSDefaultData back
+                NSArray *jsonArray;
+                @try {
                     NSData* array = [[NSUserDefaults standardUserDefaults] objectForKey:@"showerData"];
-                    NSArray *jsonArray = [NSKeyedUnarchiver unarchiveObjectWithData:array];
-
+                    jsonArray = [NSKeyedUnarchiver unarchiveObjectWithData:array];
+                }
+                @catch (NSException *exception) {
+                    jsonArray = responseObject;
+                    NSData *serialized = [NSKeyedArchiver archivedDataWithRootObject:jsonArray];
+                    [[NSUserDefaults standardUserDefaults] setObject:serialized forKey:@"showerData"];
+                }
+                @finally {
                     NSArray *save=responseObject;
                     //Compare old with loaded data
                     if(![responseObject isEqualToArray:jsonArray])
@@ -114,27 +126,22 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
                         //If new data entries exists, save the data as new default data
                         if ([responseObject isKindOfClass:[NSArray class]]) {
                             //save data -> user default object
-                            //
-                            
                             NSData *serialized = [NSKeyedArchiver archivedDataWithRootObject:save];
                             [[NSUserDefaults standardUserDefaults] setObject:serialized forKey:@"showerData"];
                             [[NSUserDefaults standardUserDefaults] synchronize];
-                            //Send Notification: Ne Data
+                            //Handle new data over
+                            [self transferData:responseObject];
+                            //Send Notification: New Data
                             [self sendNotifications:@"checkData"];
-
                         }
                         //Transfer Data normally would be called here
                     }
-                    
                     //if no new entries exsist
                     if([responseObject isEqualToArray:jsonArray])
                     {
                         //Send Notification: Pair your amphiro
                         [self sendNotifications:@"checkAmphiro"];
                     }
-                    
-                    //Transfer Data to Watch (normally this would only take place if new data exists, but for testing, this should be called with every button click event)
-                    [self transferData:responseObject];
                 }
             }
         }
@@ -145,17 +152,18 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
         }];
 }
 
-//Get JSON Data and transfer it to the watch
+/**
+ * Method to transfer the JSON data to the Watch-App.
+ @param array Array with the JSON data.
+ */
 -(void)transferData:(NSMutableArray*)array{
     
     // Configure interface objects here.
     //Setup WCSession
     [[WCSession defaultSession]setDelegate:self];
     [[WCSession defaultSession] activateSession];
-    
     NSData *serialized = [NSKeyedArchiver archivedDataWithRootObject:array];
     [[NSUserDefaults standardUserDefaults] setObject:serialized forKey:@"myKey"];
-
     NSDictionary *applicationData = [[NSDictionary alloc] initWithObjects:@[serialized] forKeys:@[@"JSONData"]];
     NSError *error = nil;
     //Send Message to the iPhone (handle over the goal value)
@@ -165,33 +173,42 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
             NSLog(@"Problem: @%@", error);
         } else {
             NSLog(@"sent dictionary");
+            // Create a dict of application data
+            [[WCSession defaultSession] sendMessage:applicationData
+                                       replyHandler:^(NSDictionary *replyHandler) {
+                                           
+                                       }
+                                       errorHandler:^(NSError *error) {
+                                       }
+             ];
         }
-        
     } else {
         NSLog(@"not paired");
     }
-    
 }
 
-- (IBAction)motivate:(id)sender {
-    //Send Notification: Pair your amphiro
-    //[self sendNotifications:@"motivate"];
-}
 
-//If no new data was found send Notification -> pair your amphiro and action to activate parent app; Later a function which checks how long since last update took place could be added. So only when data hasn't been updated for longer than x days this notification should be triggered
+/**
+ * If no new data was found it will send Notification -> "pair your amphiro" and an action to activate parent app; Later a function which checks how long since last the update took place could be added. So only when data hasn't been updated for longer than x days this notification should be triggered
+ */
 - (IBAction)try_Update:(id)sender {
     
     //Send Notification: Pair your amphiro
     [self sendNotifications:@"checkAmphiro"];
 }
 
-//Set Goal Notification
+/**
+ * Triggers the set Goal Notification. Later it would be triggered e.g. when the user has a high water/energy consumption or based on a timer
+ */
 - (IBAction)set_Goal:(id)sender {
     //Send Notification: Set Goal
     [self sendNotifications:@"set_goal"];
 }
 
-//Create and send Notifications
+/**
+ * Method to trigger (local) Notifications.
+ @param Notifications (NSString) which decides which Notification will be triggered.
+ */
 - (void) sendNotifications:(NSString *) Notifications{
     
     //Action - amphiro pairing message
@@ -234,24 +251,14 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
                                                              arguments:nil];
         content.sound = [UNNotificationSound defaultSound];
         content.categoryIdentifier=@"myCategory";
-
-        //Do it via local Notification -> replaced in iOS 10.0 and higher
-        //localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:15];
-        //localNotification.alertTitle = @"Paire dein amphiro";
-        //localNotification.alertBody = @"Habe dein amphiro länger nicht gesehen";
-        //localNotification.timeZone = [NSTimeZone defaultTimeZone];
-        //localNotification.category =@"myCategory";
-        //localNotification.hasAction = true;
-        //localNotification.alertAction = @"Öffnen";
-        //[[UNMutableNotificationContent sharedApplication] scheduleLocalNotification:localNotification];
     }
     
     //New data Message
     if ([Notifications  isEqual:@"checkData"])
     {
         content.title = [NSString localizedUserNotificationStringForKey:@"amphiro!" arguments:nil];
-        content.subtitle = [NSString localizedUserNotificationStringForKey:@"Setze dir ein Ziel" arguments:nil];
-        content.body = [NSString localizedUserNotificationStringForKey:@"Um noch mehr zu sparen =)" arguments:nil];
+        content.subtitle = [NSString localizedUserNotificationStringForKey:@"Neue Daten verfügbar" arguments:nil];
+        content.body = [NSString localizedUserNotificationStringForKey:@"Neue Daten verfügbar =)" arguments:nil];
         content.sound = [UNNotificationSound defaultSound];
         content.categoryIdentifier=@"myCategory3";
     }
@@ -263,10 +270,10 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
         content.subtitle = [NSString localizedUserNotificationStringForKey:@"Setze dir ein Ziel" arguments:nil];
         content.body = [NSString localizedUserNotificationStringForKey:@"Um noch mehr zu sparen =)" arguments:nil];
         content.sound = [UNNotificationSound defaultSound];
-        content.categoryIdentifier=@"myCategory3";
+        content.categoryIdentifier=@"myCategory2";
     }
     
-    //Send one of the above messages to iPhone, with time delay of 15 seconds
+    //Send one of the above messages to iPhone, with time delay of 5 seconds
     UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:5 repeats:NO];
     UNNotificationRequest *notificationRequest = [UNNotificationRequest requestWithIdentifier:@"kNotificationIdentifier" content:content trigger:trigger];
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
@@ -277,6 +284,57 @@ didReceiveMessage:(nonnull NSDictionary *)message replyHandler:(nonnull void (^)
 }
 
 
+/**
+ * Method to get authorization from User for Location Updates.
+ * Provides a request that asks the user if the certain location is their home.
+ * If yes: Location will be saved
+ */
+- (IBAction)pairAmphiro:(id)sender {
+    
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)])
+    {
+        [self.locationManager requestAlwaysAuthorization];
+    }
 
+    UIAlertController * alert = [UIAlertController
+                                 alertControllerWithTitle:@"amphiro"
+                                 message:@"Is this your home"
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* yesButton = [UIAlertAction
+                                actionWithTitle:@"Yes"
+                                style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction * action) {
+                                    
+                                    NSNumber *lat = [NSNumber numberWithDouble:_locationManager.location.coordinate.latitude];
+                                    NSNumber *lon = [NSNumber numberWithDouble:_locationManager.location.coordinate.longitude];
+                                    NSDictionary *userLocation=@{@"lat":lat,@"long":lon};
+                                    
+                                    [[NSUserDefaults standardUserDefaults] setObject:userLocation forKey:@"userLocation"];
+                                    [[NSUserDefaults standardUserDefaults] synchronize];
+                                    float latitude = _locationManager.location.coordinate.latitude;
+                                    float longitude = _locationManager.location.coordinate.longitude;
+                                }];
+    UIAlertAction* noButton = [UIAlertAction
+                               actionWithTitle:@"No"
+                               style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction * action) {
+                                   //Handle no, thanks button
+                               }];
+    
+    [alert addAction:yesButton];
+    [alert addAction:noButton];
+    [self presentViewController:alert animated:YES completion:nil];
+    NSLog(@"%@", [self deviceLocation]);
+}
+
+/**
+ * Location data formated into a String.
+ * Returns: deviceLocation(String)
+ */
+- (NSString *)deviceLocation {
+    return [NSString stringWithFormat:@"latitude: %f longitude: %f", _locationManager.location.coordinate.latitude, _locationManager.location.coordinate.longitude];
+}
 
 @end

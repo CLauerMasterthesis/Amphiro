@@ -10,5 +10,4 @@
 #import <Foundation/Foundation.h>
 
 @interface NotificationController : WKUserNotificationInterfaceController
-
 @end

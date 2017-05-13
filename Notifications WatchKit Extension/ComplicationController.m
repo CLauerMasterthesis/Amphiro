@@ -75,14 +75,11 @@
     //CircularSmall Image
     if (complication.family == CLKComplicationFamilyCircularSmall)
     {
-        
         CLKImageProvider *image = [CLKImageProvider imageProviderWithOnePieceImage:[UIImage imageNamed: @"Complication/Circular"]];
         CLKComplicationTemplateCircularSmallRingImage* textTemplate =
         [[CLKComplicationTemplateCircularSmallRingImage alloc] init];
         textTemplate.imageProvider = image;
-
         CLKComplicationTemplateCircularSmallRingText* text = [[CLKComplicationTemplateCircularSmallRingText alloc]init];
-        
         CLKTextProvider *t =[CLKSimpleTextProvider textProviderWithText:@"--"];
         text.textProvider =t;
         handler(textTemplate);
